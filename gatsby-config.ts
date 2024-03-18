@@ -13,7 +13,7 @@ const config: GatsbyConfig = {
     resolve: 'gatsby-source-sanity',
     options: {
       "projectId": "ed5c6bkr",
-      "dataset": ""
+      "dataset": "production"
     }
   }, "gatsby-plugin-image", "gatsby-plugin-sharp", "gatsby-transformer-sharp"]
 };

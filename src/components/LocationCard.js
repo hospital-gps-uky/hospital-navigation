@@ -1,0 +1,21 @@
+import React from 'react';
+import './LocationCard.css';
+import { GatsbyImage} from 'gatsby-plugin-image'
+
+
+const LocationCard = (location) => {
+    return (
+    <div className="card container">
+                <GatsbyImage image={location.data.node.image2D.asset.gatsbyImageData} style={{width: '100%'}} alt={location.data.node.name}/>
+
+                <div className="column">
+                        {location.data.node.name}
+                        <span className='clickable-card'></span>
+                </div>
+    </div>
+    )
+
+}
+
+export default LocationCard
+

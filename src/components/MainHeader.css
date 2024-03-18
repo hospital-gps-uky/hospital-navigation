@@ -1,0 +1,28 @@
+.Header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #0033A0;
+    height: 10vh;
+}
+
+.UKLogo {
+    padding-top: 1vh;
+    height: 8vh;
+}
+
+.Header-links-div {
+    display: flex;
+    position: absolute;
+    top: 4vh;
+    right: min(25px, 25vw)
+}
+
+.Header-link {
+    color: white;
+    padding-right: 2vw;
+    padding-left: 2vw;
+    font-family: "KentuckyFont_2";
+    font-size: min(2vh, 3vw);
+    text-decoration: none;
+}

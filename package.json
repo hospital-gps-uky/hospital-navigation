@@ -16,18 +16,23 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@photo-sphere-viewer/core": "^5.7.2",
+    "dijkstrajs": "^1.0.3",
     "gatsby": "^5.13.3",
     "gatsby-plugin-image": "^3.13.1",
     "gatsby-plugin-sharp": "^5.13.1",
     "gatsby-source-sanity": "^7.9.1",
     "gatsby-transformer-sharp": "^5.13.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-pannellum": "^0.2.14",
+    "react-photo-sphere-viewer": "^5.0.2-psv5.7.1",
+    "react-router-dom": "^6.22.3"
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
+    "@types/react-dom": "^18.2.22",
     "typescript": "^5.3.3"
   }
 }
