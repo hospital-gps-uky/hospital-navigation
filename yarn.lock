@@ -1971,6 +1971,11 @@
   dependencies:
     three "^0.161.0"
 
+"@photo-sphere-viewer/map-plugin@^5.7.2":
+  version "5.7.2"
+  resolved "https://registry.yarnpkg.com/@photo-sphere-viewer/map-plugin/-/map-plugin-5.7.2.tgz#84853b04e64b1035d0c7782a76f37e04aacac013"
+  integrity sha512-Rlsxn7tqlYaYAN8KCxBUHkldx1AdLnAfJFNPhhYllZuvu5wHRNWLsdcv8M5QyFC6sEkBftYq1KnPnTjp5LrZDw==
+
 "@pmmmwh/react-refresh-webpack-plugin@^0.5.10":
   version "0.5.11"
   resolved "https://registry.yarnpkg.com/@pmmmwh/react-refresh-webpack-plugin/-/react-refresh-webpack-plugin-0.5.11.tgz#7c2268cedaa0644d677e8c4f377bc8fb304f714a"

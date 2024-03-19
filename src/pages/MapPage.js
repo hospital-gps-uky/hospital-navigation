@@ -2,11 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import './MapPage.css';
 import MapButton from '../components/MapButton';
 import MainHeader from '../components/MainHeader';
-import { GatsbyImage} from 'gatsby-plugin-image'
 import { graphql } from 'gatsby';
 import { find_path } from 'dijkstrajs';
-
-import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
+import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer'; // Import MapPlugin here
+import { MapPlugin } from '@photo-sphere-viewer/map-plugin';
  
 function RouteElement({path, currentIndex}) {
     let locations = []
@@ -34,94 +33,6 @@ function RouteElement({path, currentIndex}) {
     )
 }
 
-
-function MiniMap({ path, currentIndex }) {
-    const canvasRef = useRef(null);
-    const [dragging, setDragging] = useState(false);
-    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-
-    useEffect(() => {
-        if (!canvasRef.current || !path || path.length === 0 || !path[currentIndex]) return;
-
-        const ctx = canvasRef.current.getContext('2d');
-        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-
-        // Fetch map image URL using the currentIndex's map_id
-        const mapId = path[currentIndex].map_id;
-        const mapImageUrl = `http://localhost:8000/map/image/get/${mapId}`; // Adjust this to your API endpoint
-
-        // Draw the map image on the canvas
-        const mapImage = new Image();
-        mapImage.onload = () => {
-            // Draw the map image at the current x and y coordinates with zoom
-            const scaleFactor = .75; // Adjust the zoom factor as needed
-            const currentLocation = path[currentIndex];
-            const x = currentLocation.x + dragOffset.x;
-            const y = currentLocation.y + dragOffset.y;
-            const width = canvasRef.current.width / scaleFactor;
-            const height = canvasRef.current.height / scaleFactor;
-            ctx.drawImage(mapImage, x - width / 2, y - height / 2, width, height, 0, 0, canvasRef.current.width, canvasRef.current.height);
-            
-            // Draw lines for the path on the mini-map
-            ctx.strokeStyle = 'blue';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            path.forEach((location, index) => {
-                if (index > 0) {
-                    const prevLocation = path[index - 1];
-                    const currentLocation = path[index];
-                    // Adjust line coordinates for scaling and zooming
-                    const prevX = (prevLocation.x - x + width / 2) * scaleFactor;
-                    const prevY = (prevLocation.y - y + height / 2) * scaleFactor;
-                    const currX = (currentLocation.x - x + width / 2) * scaleFactor;
-                    const currY = (currentLocation.y - y + height / 2) * scaleFactor;
-                    ctx.moveTo(prevX, prevY);
-                    ctx.lineTo(currX, currY);
-                    ctx.stroke();
-                }
-            });
-        };
-        mapImage.src = mapImageUrl;
-    }, [path, currentIndex, dragOffset]);
-
-    const handleMouseDown = (e) => {
-        setDragging(true);
-        setDragStart({ x: e.clientX, y: e.clientY });
-    };
-
-    const handleMouseMove = (e) => {
-        if (!dragging) return;
-        const offsetX = e.clientX - dragStart.x + dragOffset.x;
-        const offsetY = e.clientY - dragStart.y + dragOffset.y;
-        setDragOffset({ x: offsetX, y: offsetY });
-    };
-
-    const handleMouseUp = () => {
-        setDragging(false);
-    };
-
-    useEffect(() => {
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-
-        return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [dragging]);
-
-    return (
-        <canvas
-            ref={canvasRef}
-            width={400}
-            height={300}
-            style={{ position: 'absolute', bottom: 10, left: 10, cursor: dragging ? 'grabbing' : 'grab' }}
-            onMouseDown={handleMouseDown}
-        />
-    );
-}
-
 function calculateWeight(location1, location2){
     const deltaX = location1.x - location2.x;
     const deltaY = location1.y - location2.y;
@@ -129,7 +40,6 @@ function calculateWeight(location1, location2){
     return Math.sqrt(deltaX ** 2 + deltaY ** 2);
 
 }
-
 
 // Take an array of edges, calculate weights, and create graph.
 function createGraph(edges) {
@@ -179,7 +89,7 @@ const MapPage = ({ data, location } ) => {
             setCurrentIndex(currentIndex + 1);
         }
     }
-
+    console.log("Hello" + maps);
     return (
         <div className='MapPage'>
             <MainHeader />
@@ -198,7 +108,18 @@ const MapPage = ({ data, location } ) => {
 
             <div className="mapContainer">
                 <RouteElement path={path} currentIndex={currentIndex} className="navRoute"/>
-                <ReactPhotoSphereViewer ref={photoSphereRef} height={'100vh'} width={"100%"}></ReactPhotoSphereViewer>
+                <ReactPhotoSphereViewer
+                    ref={photoSphereRef}
+                    height={'100vh'}
+                    width={"100%"}
+                    plugins={[
+                        [MapPlugin, { // Configure MapPlugin here
+                            imageUrl: maps[0].image.asset.publicUrl,
+                            center: { x: 0, y: 0 }, // Adjust the center coordinates as needed
+                            rotation: '-12deg', // Adjust rotation as needed
+                        }]
+                    ]}
+                ></ReactPhotoSphereViewer>
                 <div className="miniMapContainer">
                     {/*<MiniMap path={path} currentIndex={currentIndex} />*/}
                 </div>
