@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@photo-sphere-viewer/core": "^5.7.2",
+    "dijkstra-calculator": "^1.0.8",
     "dijkstrajs": "^1.0.3",
     "gatsby": "^5.13.3",
     "gatsby-plugin-image": "^3.13.1",

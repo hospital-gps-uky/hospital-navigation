@@ -7,7 +7,10 @@ import './ChooseEnd.css'
 import { Link } from "gatsby"
 
 const ChooseEnd = ({ data, location } ) => {
-    let startName = location.state.startName;
+    let startName;
+    if(typeof location.state !== "undefined") {
+      startName = location.state.startName;
+    }
     const allSanityEndLocations = data.allSanityLocation.edges.filter((location) => location.node.type === "end")
 
     return (
