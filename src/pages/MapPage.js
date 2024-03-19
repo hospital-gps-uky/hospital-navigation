@@ -4,9 +4,10 @@ import MapButton from '../components/MapButton';
 import MainHeader from '../components/MainHeader';
 import { GatsbyImage} from 'gatsby-plugin-image'
 import { graphql } from 'gatsby';
-import { find_path } from 'dijkstrajs';
 
 import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
+import { DijkstraCalculator } from 'dijkstra-calculator';
+
  
 function RouteElement({path, currentIndex}) {
     let locations = []
@@ -132,27 +133,38 @@ function calculateWeight(location1, location2){
 
 
 // Take an array of edges, calculate weights, and create graph.
-function createGraph(edges) {
-    let graph = {};
+function createGraph(locations, edges) {
+    const graph = new DijkstraCalculator();
+
+    locations.map((location) => {
+        graph.addVertex(location.node.name);
+    })
+
     edges.map((edge) => {
         const weight = calculateWeight(edge.node.location1, edge.node.location2);
         // location1.name: {location2.name: weight}
-        graph[edge.node.location1.name] = {[edge.node.location2.name]: weight}
+        graph.addEdge(edge.node.location1.name, edge.node.location2.name, weight);
     });
     return graph;
 }
 
 const MapPage = ({ data, location } ) => {
+
     const photoSphereRef = React.createRef();
 
     const maps = data.allSanityMap.nodes; // Use this to access an array of the maps.
 
-    let start = location.state.startName;
-    let end = location.state.endName;
-
     let [currentIndex, setCurrentIndex] = useState(0); // The current index into the path array
     let [path, setPath] = useState([]);
 
+    let start = null;
+    let end = null;
+    
+    if(typeof location.state !== "undefined") {
+        start = location.state.startName;
+        end = location.state.endName;
+    } 
+        
     // Create path
     useEffect(() => {
         if (start === undefined || end === undefined) {
@@ -162,8 +174,9 @@ const MapPage = ({ data, location } ) => {
         }
         
         const edges = data.allSanityEdge.edges;
-        const graph = createGraph(edges);
-        setPath(find_path(graph, start, end))
+        const locations = data.allSanityLocation.edges;
+        const graph = createGraph(locations, edges);
+        setPath(graph.calculateShortestPath(start, end));
         setCurrentIndex(0);
     }, [start, end]);
 
