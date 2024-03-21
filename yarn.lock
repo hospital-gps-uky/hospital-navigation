@@ -1971,6 +1971,11 @@
   dependencies:
     three "^0.161.0"
 
+"@photo-sphere-viewer/gyroscope-plugin@^5.7.2":
+  version "5.7.2"
+  resolved "https://registry.yarnpkg.com/@photo-sphere-viewer/gyroscope-plugin/-/gyroscope-plugin-5.7.2.tgz#3c4a154bf0183a347061d07343df8cf7f37895cf"
+  integrity sha512-GHbm96fBfcxzo1RXYsuuhCRxR0TIv3S+3HszyyNKF4x9Nc6dledl26s98ND5ivnviHtAzH/u4eIWHTO3t2+HMg==
+
 "@pmmmwh/react-refresh-webpack-plugin@^0.5.10":
   version "0.5.11"
   resolved "https://registry.yarnpkg.com/@pmmmwh/react-refresh-webpack-plugin/-/react-refresh-webpack-plugin-0.5.11.tgz#7c2268cedaa0644d677e8c4f377bc8fb304f714a"
