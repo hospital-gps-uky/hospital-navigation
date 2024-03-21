@@ -7,6 +7,8 @@ import { graphql } from 'gatsby';
 
 import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
 import { DijkstraCalculator } from 'dijkstra-calculator';
+import { GyroscopePlugin } from '@photo-sphere-viewer/gyroscope-plugin';
+
 
  
 function RouteElement({path, currentIndex}) {
@@ -211,7 +213,12 @@ const MapPage = ({ data, location } ) => {
 
             <div className="mapContainer">
                 <RouteElement path={path} currentIndex={currentIndex} className="navRoute"/>
-                <ReactPhotoSphereViewer ref={photoSphereRef} height={'100vh'} width={"100%"}></ReactPhotoSphereViewer>
+                <ReactPhotoSphereViewer 
+                    ref={photoSphereRef} 
+                    height={'70vh'} 
+                    width={"100%"}
+                    plugins={[GyroscopePlugin]}
+                />
                 <div className="miniMapContainer">
                     {/*<MiniMap path={path} currentIndex={currentIndex} />*/}
                 </div>
