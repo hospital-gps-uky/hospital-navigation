@@ -9,7 +9,7 @@ const LocationCard = (location) => {
     return (
     <div className="card container">
                 <GatsbyImage 
-                    image={location.data.node.image2D ? location.data.node.image2D.asset.gatsbyImageData : placeHolder} 
+                    image={location.data.node.image2D ? location.data.node.image2D.asset.gatsbyImageData : null} 
                     style={{width: '100%'}} 
                     alt={location.data.node.name}/>
 
