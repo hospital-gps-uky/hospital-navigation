@@ -3,7 +3,7 @@ import './MapPage.css';
 import MapButton from '../components/MapButton';
 import MainHeader from '../components/MainHeader';
 import { GatsbyImage} from 'gatsby-plugin-image'
-import { graphql } from 'gatsby';
+import { Link, graphql } from 'gatsby';
 
 import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
 import { DijkstraCalculator } from 'dijkstra-calculator';
@@ -200,7 +200,9 @@ const MapPage = ({ data, location } ) => {
             <MainHeader />
             <div className="controlBox">
                 <MapButton link=".." displayText="New Entrance" />
-                <MapButton link={"../" + start} displayText="New Destination" />
+                <Link to={`/ChooseEnd/`} state={{ startName: start}}>
+                    <MapButton link={""} displayText="New Destination" />
+                </Link>
                 <div className="destBox">
                     <div className="buttonDiv">
                         <button className="customButton" onClick={nextLocation}>
