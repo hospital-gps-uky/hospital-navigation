@@ -4,12 +4,11 @@
     align-items: center;
     justify-content: center;
     justify-content: space-around;
-    height: 10vh;
+    padding: 20px 0px;
 }
 
 .destBox{
     display: flex;
-    flex-direction: column;
     justify-content: center;
     /* padding-left: 1vh; */
 }
@@ -26,9 +25,9 @@
 
 .customButton {
     justify-content: center;
-    width: 30vw;
+    width: 20vw;
     height: min(8vw, 8vh);
-    font-size: 3vw;
+    font-size: 2vw;
 
     appearance: button;
     backface-visibility: hidden;
@@ -64,9 +63,9 @@
     /* align-items: center; */
     /* justify-content: center; */
     flex-wrap: wrap;
-    height: 5vh;
     padding-bottom: 2rem;
     font-size: 2.1vw;
+    width: 100vw;
 }
 
 .bold-location {
@@ -76,6 +75,7 @@
 .mapContainer {
     position: relative;
     width: 100%;
+    justify-content: center;
     @media only screen and (max-width: 768px) {
         width: 100vw; /* 100% of viewport width */
     }
