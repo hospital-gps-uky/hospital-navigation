@@ -3,11 +3,12 @@ import './MapPage.css';
 import MapButton from '../components/MapButton';
 import MainHeader from '../components/MainHeader';
 import { GatsbyImage} from 'gatsby-plugin-image'
-import { graphql } from 'gatsby';
+import { Link, graphql } from 'gatsby';
 
 import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
 import { DijkstraCalculator } from 'dijkstra-calculator';
 import { GyroscopePlugin } from '@photo-sphere-viewer/gyroscope-plugin';
+
 
 
  
@@ -35,94 +36,6 @@ function RouteElement({path, currentIndex}) {
             {locations}
         </div>
     )
-}
-
-
-function MiniMap({ path, currentIndex }) {
-    const canvasRef = useRef(null);
-    const [dragging, setDragging] = useState(false);
-    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-
-    useEffect(() => {
-        if (!canvasRef.current || !path || path.length === 0 || !path[currentIndex]) return;
-
-        const ctx = canvasRef.current.getContext('2d');
-        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-
-        // Fetch map image URL using the currentIndex's map_id
-        const mapId = path[currentIndex].map_id;
-        const mapImageUrl = `http://localhost:8000/map/image/get/${mapId}`; // Adjust this to your API endpoint
-
-        // Draw the map image on the canvas
-        const mapImage = new Image();
-        mapImage.onload = () => {
-            // Draw the map image at the current x and y coordinates with zoom
-            const scaleFactor = .75; // Adjust the zoom factor as needed
-            const currentLocation = path[currentIndex];
-            const x = currentLocation.x + dragOffset.x;
-            const y = currentLocation.y + dragOffset.y;
-            const width = canvasRef.current.width / scaleFactor;
-            const height = canvasRef.current.height / scaleFactor;
-            ctx.drawImage(mapImage, x - width / 2, y - height / 2, width, height, 0, 0, canvasRef.current.width, canvasRef.current.height);
-            
-            // Draw lines for the path on the mini-map
-            ctx.strokeStyle = 'blue';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            path.forEach((location, index) => {
-                if (index > 0) {
-                    const prevLocation = path[index - 1];
-                    const currentLocation = path[index];
-                    // Adjust line coordinates for scaling and zooming
-                    const prevX = (prevLocation.x - x + width / 2) * scaleFactor;
-                    const prevY = (prevLocation.y - y + height / 2) * scaleFactor;
-                    const currX = (currentLocation.x - x + width / 2) * scaleFactor;
-                    const currY = (currentLocation.y - y + height / 2) * scaleFactor;
-                    ctx.moveTo(prevX, prevY);
-                    ctx.lineTo(currX, currY);
-                    ctx.stroke();
-                }
-            });
-        };
-        mapImage.src = mapImageUrl;
-    }, [path, currentIndex, dragOffset]);
-
-    const handleMouseDown = (e) => {
-        setDragging(true);
-        setDragStart({ x: e.clientX, y: e.clientY });
-    };
-
-    const handleMouseMove = (e) => {
-        if (!dragging) return;
-        const offsetX = e.clientX - dragStart.x + dragOffset.x;
-        const offsetY = e.clientY - dragStart.y + dragOffset.y;
-        setDragOffset({ x: offsetX, y: offsetY });
-    };
-
-    const handleMouseUp = () => {
-        setDragging(false);
-    };
-
-    useEffect(() => {
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-
-        return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [dragging]);
-
-    return (
-        <canvas
-            ref={canvasRef}
-            width={400}
-            height={300}
-            style={{ position: 'absolute', bottom: 10, left: 10, cursor: dragging ? 'grabbing' : 'grab' }}
-            onMouseDown={handleMouseDown}
-        />
-    );
 }
 
 function calculateWeight(location1, location2){
@@ -158,6 +71,7 @@ const MapPage = ({ data, location } ) => {
 
     let [currentIndex, setCurrentIndex] = useState(0); // The current index into the path array
     let [path, setPath] = useState([]);
+    let [reverse, setReverse] = useState(false);
 
     let start = null;
     let end = null;
@@ -186,7 +100,7 @@ const MapPage = ({ data, location } ) => {
     useEffect(() => {
         if (path.length <= 0) return;
         const newCurrentLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex]).node;
-        photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl);
+        photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl, {transition: false, position: {yaw: reverse ? 3.2 : 0, pitch: 0}});
     }, [path, currentIndex]);
 
     function nextLocation() {
@@ -194,20 +108,59 @@ const MapPage = ({ data, location } ) => {
             setCurrentIndex(currentIndex + 1);
         }
     }
+    function prevLocation() {
+        if (currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+        }
+    }
+    function returnToStart() {
+        setPath(path.reverse())
+        setCurrentIndex(0);
+        setReverse(true);
+    }
 
     return (
         <div className='MapPage'>
             <MainHeader />
             <div className="controlBox">
                 <MapButton link=".." displayText="New Entrance" />
-                <MapButton link={"../" + start} displayText="New Destination" />
-                <div className="destBox">
-                    <div className="buttonDiv">
-                        <button className="customButton" onClick={nextLocation}>
-                            Next Image
-                        </button>
-                    </div>
-                </div>
+                <Link to={`/ChooseEnd/`} state={{ startName: start}}>
+                    <MapButton link={""} displayText="New Destination" />
+                </Link>
+                {!reverse || (reverse && currentIndex < path.length - 1) ? (
+                    <>
+                        {currentIndex > 0 && (
+                            <div className="destBox">
+                                <div className="buttonDiv">
+                                    <button className="customButton" onClick={prevLocation}>
+                                        Previous Image
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        {currentIndex < path.length - 1 && (
+                            <div className="destBox">
+                                <div className="buttonDiv">
+                                    <button className="customButton" onClick={nextLocation}>
+                                        Next Image
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        {currentIndex === path.length - 1 && path[0] !== end && (
+                            <div className="destBox">
+                                <div className="buttonDiv">
+                                    <button className="customButton" onClick={returnToStart}>
+                                        Return to start
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <h1 className="">You have returned to the start.</h1>
+                )}
+
             </div>
 
 
