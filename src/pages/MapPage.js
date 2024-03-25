@@ -8,7 +8,8 @@ import { Link, graphql } from 'gatsby';
 import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
 import { DijkstraCalculator } from 'dijkstra-calculator';
 import { GyroscopePlugin } from '@photo-sphere-viewer/gyroscope-plugin';
-
+import { MapPlugin } from '@photo-sphere-viewer/map-plugin';
+import '@photo-sphere-viewer/map-plugin/index.css';
 
 
  
@@ -98,10 +99,32 @@ const MapPage = ({ data, location } ) => {
 
     // Update image.
     useEffect(() => {
-        if (path.length <= 0) return;
-        const newCurrentLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex]).node;
-        photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl, {transition: false, position: {yaw: reverse ? 3.2 : 0, pitch: 0}});
-    }, [path, currentIndex]);
+      if (path.length <= 0) return;
+      const newCurrentLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex]).node;
+      photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl, {transition: false, position: {yaw: reverse ? 3.2 : 0, pitch: 0}});
+      
+      // Calculate the angle towards the next location
+      let angle = 0;
+      if (currentIndex < path.length - 1) {
+        const nextLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
+        const deltaX = nextLocation.x - newCurrentLocation.x;
+        const deltaY = nextLocation.y - newCurrentLocation.y;
+        angle = Math.atan2(deltaY, deltaX);
+
+        // Adjust the angle to be within the range of 0 to 6.28 (2 * Math.PI)
+        angle = (angle >= 0 ? angle : (2 * Math.PI + angle)) + Math.PI/2;
+      }
+
+      // Update center coordinates dynamically
+      const center = { x: newCurrentLocation.x, y: newCurrentLocation.y };
+
+      //Update floor based on image
+      const currentFloor = newCurrentLocation.floor; // get current floor from current location
+      const currentFloorMap = maps.find(map => map.floor === currentFloor); // find the map object that has the current floor
+      photoSphereRef.current.getPlugin(MapPlugin).setImage(currentFloorMap.image.asset.publicUrl, center, angle);
+
+    }, [path, currentIndex, reverse]);
+
 
     function nextLocation() {
         if (currentIndex < path.length - 1) {
@@ -170,11 +193,15 @@ const MapPage = ({ data, location } ) => {
                     ref={photoSphereRef} 
                     height={'70vh'} 
                     width={"100%"}
-                    plugins={[GyroscopePlugin]}
+                    plugins={[
+                      [GyroscopePlugin],
+                      [MapPlugin, {
+                          imageUrl: '',
+                          center: { x: 1035, y: 727 }, // Default coordinates
+                          rotation: '0deg',
+                      }]
+                  ]}                   
                 />
-                <div className="miniMapContainer">
-                    {/*<MiniMap path={path} currentIndex={currentIndex} />*/}
-                </div>
             </div>
         </div>
     );
