@@ -132,7 +132,7 @@ const MapPage = ({ data, location } ) => {
         // Create a new image object
         const mapImage = new Image();
         mapImage.src = currentFloorMap.image.asset.publicUrl;
-      
+        
         // Draw the map on canvas
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
@@ -142,24 +142,30 @@ const MapPage = ({ data, location } ) => {
           context.drawImage(mapImage, 0, 0);
           
           // Draw the path on canvas
-          context.strokeStyle = 'blue';
+          context.strokeStyle = 'blue'; // Full opacity color
           context.lineWidth = 5;
-          context.beginPath();
-          context.moveTo(newCurrentLocation.x, newCurrentLocation.y);
-          for (let i = currentIndex + 1; i < path.length; i++) {
-            const nextLocation = data.allSanityLocation.edges.find(location => location.node.name === path[i]).node;
-            context.lineTo(nextLocation.x, nextLocation.y);
+          for (let i = 0; i < path.length - 1; i++) {
+            const startLocation = data.allSanityLocation.edges.find(location => location.node.name === path[i]).node;
+            const endLocation = data.allSanityLocation.edges.find(location => location.node.name === path[i + 1]).node;
+            context.beginPath();
+            context.moveTo(startLocation.x, startLocation.y);
+            context.lineTo(endLocation.x, endLocation.y);
+            // Adjust the opacity for segments that have been traversed
+            if (i < currentIndex) {
+              context.globalAlpha = 0.5; // Reduced opacity
+            } else {
+              context.globalAlpha = 1.0; // Full opacity
+            }
+            context.stroke();
           }
-          context.stroke();
           
           // Convert canvas to data URL
           const imageURL = canvas.toDataURL();
-      
+          
           // Set the image with path drawn on it
           photoSphereRef.current.getPlugin(MapPlugin)?.setImage(imageURL, center, angle);
         };
-      
-      }, [path, currentIndex, reverse]);
+    }, [path, currentIndex, reverse]);
       
 
 
