@@ -13,30 +13,43 @@ import '@photo-sphere-viewer/map-plugin/index.css';
 
 
  
-function RouteElement({path, currentIndex}) {
-    let locations = []
-
-    path.forEach((location, index) => {
-        let thisItemBold = false;
-
-        if (currentIndex === index) { // on active location
-            thisItemBold = true; // make this element bold
+function RouteElement({ path, currentIndex }) {
+    let locations = [];
+  
+    // Check if there are enough locations in the path
+    if (path.length < 2) {
+      locations.push(<div key={path[0]} className="navitem bold-location">{path[0]}</div>);
+    } else {
+      // If at the last index, display only the start and end locations
+      if (currentIndex === path.length - 1) {
+        locations.push(<div key={path[0]} className="navitem">{path[0]}</div>);
+        locations.push(<div key={`${path[0]}Arrow`} className="nav-item">&nbsp; → &nbsp;</div>);
+        locations.push(<div key={path[path.length - 1]} className="navitem bold-location">{path[path.length - 1]}</div>);
+      } else {
+        // Add the first location only if currentIndex is not 0
+        if (currentIndex > 0) {
+          locations.push(<div key={path[0]} className="navitem">{path[0]}</div>);
+          locations.push(<div key={`${path[0]}Arrow`} className="nav-item">&nbsp; → &nbsp;</div>);
+          locations.push(<div key={path[currentIndex - 1]} className="navitem">{path[currentIndex - 1]}</div>);
+          locations.push(<div key={`${path[currentIndex - 1]}Arrow`} className="nav-item">&nbsp; → &nbsp;</div>);
         }
-
-        // puts a div with location text and a div with just an arrow into locations array
-        locations.push(<div key={location} className={`navitem ${thisItemBold ? "bold-location" : ""}`}>{location}</div>)
-        locations.push(<div key={location + "Arrow"} className='nav-item'>&nbsp; → &nbsp;</div>) 
-    });
-
-    if (locations.length > 0)
-        locations.pop() // remove last arrow
-
-    // return constucted array of divs
-    return (
-        <div className='nav-route'>
-            {locations}
-        </div>
-    )
+        
+        // Add the current location
+        locations.push(<div key={path[currentIndex]} className="navitem bold-location">{path[currentIndex]}</div>);
+        locations.push(<div key={`${path[currentIndex]}Arrow`} className="nav-item">&nbsp; → &nbsp;</div>);
+  
+        // Add the next location (if not the last location)
+        if (currentIndex < path.length - 2) {
+          locations.push(<div key={path[currentIndex + 1]} className="navitem">{path[currentIndex + 1]}</div>);
+          locations.push(<div key={`${path[currentIndex + 1]}Arrow`} className="nav-item">&nbsp; → &nbsp;</div>);
+        }
+        
+        // Add the last location
+        locations.push(<div key={path[path.length - 1]} className="navitem">{path[path.length - 1]}</div>);
+      }
+    }
+  
+    return <div className="nav-route">{locations}</div>;
 }
 
 function calculateWeight(location1, location2){
