@@ -99,31 +99,68 @@ const MapPage = ({ data, location } ) => {
 
     // Update image.
     useEffect(() => {
-      if (path.length <= 0) return;
-      const newCurrentLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex]).node;
-      photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl, {transition: false, position: {yaw: reverse ? 3.2 : 0, pitch: 0}});
+        if (path.length <= 0 || !photoSphereRef.current) return;
+        
+        const newCurrentLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex]).node;
+        photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl, {transition: false, position: {yaw: reverse ? 3.2 : 0, pitch: 0}});
+        
+        // Calculate the angle towards the next location
+        let angle = 0;
+        if (currentIndex < path.length - 1) {
+          const nextLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
+          const deltaX = nextLocation.x - newCurrentLocation.x;
+          const deltaY = nextLocation.y - newCurrentLocation.y;
+          angle = Math.atan2(deltaY, deltaX);
       
-      // Calculate the angle towards the next location
-      let angle = 0;
-      if (currentIndex < path.length - 1) {
-        const nextLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
-        const deltaX = nextLocation.x - newCurrentLocation.x;
-        const deltaY = nextLocation.y - newCurrentLocation.y;
-        angle = Math.atan2(deltaY, deltaX);
+          // Adjust the angle to be within the range of 0 to 6.28 (2 * Math.PI)
+          angle = (angle >= 0 ? angle : (2 * Math.PI + angle)) + Math.PI/2;
 
-        // Adjust the angle to be within the range of 0 to 6.28 (2 * Math.PI)
-        angle = (angle >= 0 ? angle : (2 * Math.PI + angle)) + Math.PI/2;
-      }
-
-      // Update center coordinates dynamically
-      const center = { x: newCurrentLocation.x, y: newCurrentLocation.y };
-
-      //Update floor based on image
-      const currentFloor = newCurrentLocation.floor; // get current floor from current location
-      const currentFloorMap = maps.find(map => map.floor === currentFloor); // find the map object that has the current floor
-      photoSphereRef.current.getPlugin(MapPlugin).setImage(currentFloorMap.image.asset.publicUrl, center, angle);
-
-    }, [path, currentIndex, reverse]);
+              // Adjust the angle when going in reverse
+            if (reverse) {
+                angle -= Math.PI; // Subtract 180 degrees or π radians
+            }
+        }
+        
+      
+        // Update center coordinates dynamically
+        const center = { x: newCurrentLocation.x, y: newCurrentLocation.y };
+      
+        // Update floor based on image
+        const currentFloor = newCurrentLocation.floor; // get current floor from current location
+        const currentFloorMap = maps.find(map => map.floor === currentFloor); // find the map object that has the current floor
+      
+        // Create a new image object
+        const mapImage = new Image();
+        mapImage.src = currentFloorMap.image.asset.publicUrl;
+      
+        // Draw the map on canvas
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        mapImage.onload = function() {
+          canvas.width = mapImage.width;
+          canvas.height = mapImage.height;
+          context.drawImage(mapImage, 0, 0);
+          
+          // Draw the path on canvas
+          context.strokeStyle = 'blue';
+          context.lineWidth = 5;
+          context.beginPath();
+          context.moveTo(newCurrentLocation.x, newCurrentLocation.y);
+          for (let i = currentIndex + 1; i < path.length; i++) {
+            const nextLocation = data.allSanityLocation.edges.find(location => location.node.name === path[i]).node;
+            context.lineTo(nextLocation.x, nextLocation.y);
+          }
+          context.stroke();
+          
+          // Convert canvas to data URL
+          const imageURL = canvas.toDataURL();
+      
+          // Set the image with path drawn on it
+          photoSphereRef.current.getPlugin(MapPlugin)?.setImage(imageURL, center, angle);
+        };
+      
+      }, [path, currentIndex, reverse]);
+      
 
 
     function nextLocation() {
@@ -199,6 +236,7 @@ const MapPage = ({ data, location } ) => {
                           imageUrl: '',
                           center: { x: 1035, y: 727 }, // Default coordinates
                           rotation: '0deg',
+                          defaultZoom: 50,
                       }]
                   ]}                   
                 />
