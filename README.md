@@ -26,6 +26,8 @@
     ```shell
     cd studio
     sanity start
+    OR
+    yarn sanity start
     ```
 
     The back-end is deployed to "http://localhost:3333/" by default.
