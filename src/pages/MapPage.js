@@ -69,9 +69,10 @@ function createGraph(locations, edges, start, end) {
         if(location.node.type === 'intersection'){
           graph.addVertex(location.node.name);
         }
-        graph.addVertex(start);
-        graph.addVertex(end);
     })
+
+    graph.addVertex(start);
+    graph.addVertex(end);
 
     edges.map((edge) => {
         const weight = calculateWeight(edge.node.location1, edge.node.location2);
