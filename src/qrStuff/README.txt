@@ -1,0 +1,1 @@
+"testQR.py" is adapted from the original group's QR code generator; this version works out of context unlike the original version. Destination URL's are hardcoded into the script. See "QRCode.png" for sample output. 
