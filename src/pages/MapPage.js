@@ -62,11 +62,15 @@ function calculateWeight(location1, location2){
 
 
 // Take an array of edges, calculate weights, and create graph.
-function createGraph(locations, edges) {
+function createGraph(locations, edges, start, end) {
     const graph = new DijkstraCalculator();
 
     locations.map((location) => {
-        graph.addVertex(location.node.name);
+        if(location.node.type === 'intersection'){
+          graph.addVertex(location.node.name);
+        }
+        graph.addVertex(start);
+        graph.addVertex(end);
     })
 
     edges.map((edge) => {
@@ -105,7 +109,7 @@ const MapPage = ({ data, location } ) => {
         
         const edges = data.allSanityEdge.edges;
         const locations = data.allSanityLocation.edges;
-        const graph = createGraph(locations, edges);
+        const graph = createGraph(locations, edges, start, end);
         setPath(graph.calculateShortestPath(start, end));
         setCurrentIndex(0);
     }, [start, end]);
