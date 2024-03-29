@@ -13,10 +13,14 @@ const App = () => {
 
 const Start = () => {
     const location = useLocation();
+    let startName;
     
-    const queryParameters = new URLSearchParams(location.search);
+    if(location.search){
+        const queryParameters = new URLSearchParams(location.search);
+        startName = queryParameters.get("start").replace(/_/g, ' ');;
+    }
 
-    let startName = queryParameters.get("start").replace(/_/g, ' ');;
+    
     useEffect(() => {
         navigate('/ChooseEnd/', {state: {startName: startName}}  );
     })
