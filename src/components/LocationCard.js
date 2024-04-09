@@ -1,23 +1,28 @@
 import React from 'react';
 import './LocationCard.css';
 import { GatsbyImage} from 'gatsby-plugin-image'
+import { motion } from 'framer-motion';
 
 import placeHolder from '../images/1st Floor Main Entrance.png';
 
 const LocationCard = (location) => {
 
     return (
-    <div className="card container">
+    <motion.div initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.6 }}>
+        <div className="card container">
                 <GatsbyImage 
                     image={location.data.node.image2D ? location.data.node.image2D.asset.gatsbyImageData : placeHolder} 
-                    style={{width: '100%'}} 
-                    alt={location.data.node.name}/>
+                    alt={location.data.node.name}
+                    style={{maxHeight: '250px'}}/>
 
                 <div className="column">
-                        {location.data.node.name}
-                        <span className='clickable-card'></span>
+                    <p className="locationName">{location.data.node.name}</p>
                 </div>
-    </div>
+        
+        </div>
+    </motion.div>
     )
 
 }

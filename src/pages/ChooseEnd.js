@@ -21,7 +21,7 @@ const ChooseEnd = ({ data, location } ) => {
                 <h4 className="choose-end">Select what destination you are going to</h4>
 
                 {allSanityEndLocations.map((node) => (
-                    <Link to={`/MapPage/`} state={{endName: node.node.name, startName: startName}}>
+                    <Link to={`/MapPage/`} state={{endName: node.node.name, startName: startName}} style={{textDecoration: 'none'}}>
                         <LocationCard data={node} start=""/>
                     </Link>
                 ))}
