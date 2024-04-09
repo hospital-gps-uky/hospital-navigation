@@ -2,7 +2,6 @@ import React from 'react';
 import './index.css';
 import { graphql } from 'gatsby'
 import { Link } from "gatsby"
-import { motion } from 'framer-motion';
 
 import LocationCard from '../components/LocationCard.js';
 import MainHeader from '../components/MainHeader.js';

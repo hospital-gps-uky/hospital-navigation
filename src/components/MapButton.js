@@ -5,7 +5,7 @@ function MapButton({link, displayText}) {
         <div className="destBox">
             <div className="buttonDiv">
                 <a href={link}>
-                    <button className="customButton" role="button">{displayText}</button>
+                    <button className="customButton">{displayText}</button>
                 </a>
             </div>
         </div>
