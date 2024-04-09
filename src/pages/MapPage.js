@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './MapPage.css';
 import MapButton from '../components/MapButton';
 import MainHeader from '../components/MainHeader';
-import { GatsbyImage} from 'gatsby-plugin-image'
 import { Link, graphql } from 'gatsby';
 
 import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
@@ -201,7 +200,7 @@ const MapPage = ({ data, location } ) => {
     return (
         <div className='MapPage'>
             <MainHeader />
-            <div className="controlBox">
+              <div className="controlBox">
                 <MapButton link=".." displayText="New Entrance" />
                 <Link to={`/ChooseEnd/`} state={{ startName: start}}>
                     <MapButton link={""} displayText="New Destination" />
@@ -235,9 +234,10 @@ const MapPage = ({ data, location } ) => {
                                 </div>
                             </div>
                         )}
+                    
                     </>
                 ) : (
-                    <h1 className="">You have returned to the start.</h1>
+                  <p className="">You have returned to the start.</p>
                 )}
 
             </div>
