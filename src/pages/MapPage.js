@@ -257,6 +257,7 @@ const MapPage = ({ data, location } ) => {
                     ref={photoSphereRef} 
                     height={'70vh'} 
                     width={"100%"}
+                    defaultZoomLvl={0}
                     plugins={[
                       [GyroscopePlugin],
                       [MapPlugin, {
