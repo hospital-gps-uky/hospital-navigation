@@ -9,6 +9,7 @@ import { DijkstraCalculator } from 'dijkstra-calculator';
 import { GyroscopePlugin } from '@photo-sphere-viewer/gyroscope-plugin';
 import { MapPlugin } from '@photo-sphere-viewer/map-plugin';
 import '@photo-sphere-viewer/map-plugin/index.css';
+import NavArrow from "../images/NavigationArrow.png";
 
 
  
@@ -109,6 +110,57 @@ const MapPage = ({ data, location } ) => {
         setCurrentIndex(0);
     }, [start, end]);
 
+    useEffect(() => {
+      if (path.length <= 0 || !photoSphereRef.current) return;
+  
+      const newCurrentLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex]).node;
+  
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+  
+      // Load the photo image
+      const photoImage = new Image();
+      photoImage.crossOrigin = "anonymous"; // Enable CORS for the image
+      photoImage.src = newCurrentLocation.image3D.asset.publicUrl;
+      photoImage.onload = () => {
+          canvas.width = photoImage.width;
+          canvas.height = photoImage.height;
+  
+          // Draw the photo image onto the canvas
+          context.drawImage(photoImage, 0, 0);
+  
+          // Load the arrow image
+          const arrowImage = new Image();
+          arrowImage.src = NavArrow;
+          arrowImage.onload = () => {
+              // Resize the arrow image
+              const maxArrowSize = Math.min(canvas.width, canvas.height) * 0.15; // Set the maximum arrow size to 10% of the canvas size
+              const aspectRatio = arrowImage.width / arrowImage.height;
+              let arrowWidth = maxArrowSize;
+              let arrowHeight = maxArrowSize / aspectRatio;
+  
+              // Ensure the arrow fits within the canvas
+              if (arrowHeight > canvas.height) {
+                  arrowHeight = canvas.height;
+                  arrowWidth = arrowHeight * aspectRatio;
+              }
+  
+              // Calculate the position to place the arrow image at the center
+              const arrowX = (canvas.width - arrowWidth) / 2;
+              const arrowY = (canvas.height - arrowHeight) / 2 + 200;
+              console.log(arrowY);
+  
+              // Draw the arrow image onto the canvas with resized dimensions
+              context.drawImage(arrowImage, arrowX, arrowY, arrowWidth, arrowHeight);
+  
+              // Set the panorama using the canvas as the source
+              photoSphereRef.current.setPanorama(canvas.toDataURL(), { transition: false, position: { yaw: reverse ? 3.2 : 0, pitch: 0 } });
+          };
+      };
+  }, [path, currentIndex, reverse]);
+  
+
+
     // Update image.
     useEffect(() => {
         if (path.length <= 0 || !photoSphereRef.current) return;
@@ -133,7 +185,7 @@ const MapPage = ({ data, location } ) => {
             }
         }
         
-      
+
         // Update center coordinates dynamically
         const center = { x: newCurrentLocation.x, y: newCurrentLocation.y };
       
@@ -198,58 +250,61 @@ const MapPage = ({ data, location } ) => {
     }
 
     return (
-        <div className='MapPage'>
-            <MainHeader />
-              <div className="controlBox">
-                <MapButton link=".." displayText="New Entrance" />
-                <Link to={`/ChooseEnd/`} state={{ startName: start}}>
-                    <MapButton link={""} displayText="New Destination" />
-                </Link>
-                {!reverse || (reverse && currentIndex < path.length - 1) ? (
-                    <>
-                        {currentIndex > 0 && (
-                            <div className="destBox">
-                                <div className="buttonDiv">
-                                    <button className="customButton" onClick={prevLocation}>
-                                        Previous Image
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                        {currentIndex < path.length - 1 && (
-                            <div className="destBox">
-                                <div className="buttonDiv">
-                                    <button className="customButton" onClick={nextLocation}>
-                                        Next Image
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                        {currentIndex === path.length - 1 && path[0] !== end && (
-                            <div className="destBox">
-                                <div className="buttonDiv">
-                                    <button className="customButton" onClick={returnToStart}>
-                                        Return to start
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    
-                    </>
-                ) : (
+      <div className='MapPage'>
+          <MainHeader />
+          <div className="controlBox">
+              <MapButton link=".." displayText="New Entrance" />
+              <Link to={`/ChooseEnd/`} state={{ startName: start }}>
+                  <MapButton link={""} displayText="New Destination" />
+              </Link>
+              {!reverse || (reverse && currentIndex < path.length - 1) ? (
+                  <>
+                      {currentIndex > 0 && (
+                          <div className="destBox">
+                              <div className="buttonDiv">
+                                  <button className="customButton" onClick={prevLocation}>
+                                      Previous Image
+                                  </button>
+                              </div>
+                          </div>
+                      )}
+                      {currentIndex < path.length - 1 && (
+                          <div className="destBox">
+                              <div className="buttonDiv">
+                                  <button className="customButton" onClick={nextLocation}>
+                                      Next Image
+                                  </button>
+                              </div>
+                          </div>
+                      )}
+                      {currentIndex === path.length - 1 && path[0] !== end && (
+                          <div className="destBox">
+                              <div className="buttonDiv">
+                                  <button className="customButton" onClick={returnToStart}>
+                                      Return to start
+                                  </button>
+                              </div>
+                          </div>
+                      )}
+                  
+                  </>
+              ) : (
                   <p className="">You have returned to the start.</p>
-                )}
-
-            </div>
-
-
-            <div className="mapContainer">
-                <RouteElement path={path} currentIndex={currentIndex} className="navRoute"/>
-                <ReactPhotoSphereViewer 
-                    ref={photoSphereRef} 
-                    height={'70vh'} 
-                    width={"100%"}
-                    plugins={[
+              )}
+          </div>
+          {currentIndex < path.length - 1 && (
+          <div className="centeredButton">
+              <img src={NavArrow} className="arrowImage" onClick={nextLocation} />
+          </div>
+           )}
+  
+          <div className="mapContainer">
+              <RouteElement path={path} currentIndex={currentIndex} className="navRoute"/>
+              <ReactPhotoSphereViewer 
+                  ref={photoSphereRef} 
+                  height={'70vh'} 
+                  width={"100%"}
+                  plugins={[
                       [GyroscopePlugin],
                       [MapPlugin, {
                           imageUrl: '',
@@ -258,10 +313,10 @@ const MapPage = ({ data, location } ) => {
                           defaultZoom: 50,
                       }]
                   ]}                   
-                />
-            </div>
-        </div>
-    );
+              />
+          </div>
+      </div>
+  );
 }
 
 export const query = graphql`

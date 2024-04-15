@@ -1,3 +1,19 @@
+.centeredButton {
+    position: absolute;
+    top: 85%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+}
+
+.arrowImage {
+    width: 100%; /* Default width */
+    max-width: 200px; /* Maximum width for smaller devices */
+    height: auto; /* Automatically adjust height to maintain aspect ratio */
+    cursor: pointer;
+    opacity: 0;
+}
+
 .controlBox {
     display: flex;
     flex-direction: row;
