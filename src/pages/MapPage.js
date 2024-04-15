@@ -114,26 +114,32 @@ const MapPage = ({ data, location } ) => {
         if (path.length <= 0 || !photoSphereRef.current) return;
         
         const newCurrentLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex]).node;
-        photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl, {transition: false, position: {yaw: reverse ? 3.2 : 0, pitch: 0}});
-        
+
         // Calculate the angle towards the next location
         let angle = 0;
         if (currentIndex < path.length - 1) {
-          const nextLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
-          const deltaX = nextLocation.x - newCurrentLocation.x;
-          const deltaY = nextLocation.y - newCurrentLocation.y;
+          const nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
+          const deltaX = nextLoc.x - newCurrentLocation.x;
+          const deltaY = nextLoc.y - newCurrentLocation.y;
+          
           angle = Math.atan2(deltaY, deltaX);
-      
           // Adjust the angle to be within the range of 0 to 6.28 (2 * Math.PI)
           angle = (angle >= 0 ? angle : (2 * Math.PI + angle)) + Math.PI/2;
 
-              // Adjust the angle when going in reverse
-            if (reverse) {
-                angle -= Math.PI; // Subtract 180 degrees or π radians
-            }
+        } 
+
+        if(reverse && currentIndex === 0){
+          const nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+2]).node;
+
+          const deltaX = nextLoc.x - newCurrentLocation.x;
+          const deltaY = nextLoc.y - newCurrentLocation.y;
+          
+          angle = Math.atan2(deltaY, deltaX) - Math.PI;
+
+          // Adjust the angle to be within the range of 0 to 6.28 (2 * Math.PI)
+          angle = (angle >= 0 ? angle : (2 * Math.PI + angle)) + Math.PI/2;
         }
-        
-      
+
         // Update center coordinates dynamically
         const center = { x: newCurrentLocation.x, y: newCurrentLocation.y };
       
@@ -175,8 +181,10 @@ const MapPage = ({ data, location } ) => {
           const imageURL = canvas.toDataURL();
           
           // Set the image with path drawn on it
-          photoSphereRef.current.getPlugin(MapPlugin)?.setImage(imageURL, center, angle);
+          photoSphereRef.current.getPlugin(MapPlugin)?.setImage(imageURL, center, 0);
+          photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl, {transition: false, position: {yaw: angle , pitch: 0}});
         };
+        
     }, [path, currentIndex, reverse]);
       
 
