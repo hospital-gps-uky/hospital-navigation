@@ -255,7 +255,9 @@ const MapPage = ({ data, location } ) => {
                           imageUrl: '',
                           center: { x: 1035, y: 727 }, // Default coordinates
                           rotation: '0deg',
-                          defaultZoom: 50,
+                          defaultZoom: 30,
+                          coneSize: 80,
+                          coneClassName: 'custom-cone',
                       }]
                   ]}                   
                 />

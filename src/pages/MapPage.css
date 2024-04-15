@@ -1,3 +1,4 @@
+/* Default styles */
 .controlBox {
     display: flex;
     flex-direction: row;
@@ -5,78 +6,162 @@
     justify-content: center;
     justify-content: space-around;
     padding: 20px 0px;
-}
-
-.destBox{
+  }
+  
+  .destBox {
     display: flex;
     justify-content: center;
     /* padding-left: 1vh; */
-}
-
-.infoText {
+  }
+  
+  .infoText {
     text-align: center;
     /* width: 40vw; */
     font-size: max(2vw, 2vh);
-}
-
-.buttonDiv {
+  }
+  
+  .buttonDiv {
     text-align: center;
-}
-
-.customButton {
+  }
+  
+  .customButton {
     justify-content: center;
     width: 20vw;
     height: min(8vw, 8vh);
     font-size: 2vw;
-
     appearance: button;
     backface-visibility: hidden;
     background-color: #405cf5;
-    border-radius: 6px;
+    border-radius: 2px;
     border-width: 0;
-    box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset,rgba(50, 50, 93, .1) 0 2px 5px 0,rgba(0, 0, 0, .07) 0 1px 1px 0;
+    box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset, rgba(50, 50, 93, .1) 0 2px 5px 0, rgba(0, 0, 0, .07) 0 1px 1px 0;
     box-sizing: border-box;
     color: #fff;
     cursor: pointer;
-    font-family: -apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif;
+    font-family: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif;
     outline: none;
     overflow: hidden;
     text-align: center;
     text-transform: none;
     transform: translateZ(0);
-    transition: all .2s,box-shadow .08s ease-in;
+    transition: all .2s, box-shadow .08s ease-in;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
-}
-
-.customButton:disabled {
-  cursor: default;
-}
-
-.customButton:focus {
-  box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset, rgba(50, 50, 93, .2) 0 6px 15px 0, rgba(0, 0, 0, .1) 0 2px 2px 0, rgba(50, 151, 211, .3) 0 0 0 4px;
-}
-
-.nav-route {
+  }
+  
+  .customButton:disabled {
+    cursor: default;
+  }
+  
+  .customButton:focus {
+    box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset, rgba(50, 50, 93, .2) 0 6px 15px 0, rgba(0, 0, 0, .1) 0 2px 2px 0, rgba(50, 151, 211, .3) 0 0 0 4px;
+  }
+  
+  .nav-route {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    padding-bottom: 2rem;
+    padding-bottom: 1rem;
     font-size: 2.1vw;
     width: 100vw;
-}
-
-.bold-location {
+  }
+  
+  .bold-location {
     font-weight: bold;
-}
-
-.mapContainer {
+  }
+  
+  .mapContainer {
     position: relative;
     width: 100%;
     justify-content: center;
-    @media only screen and (max-width: 768px) {
-        width: 100vw; /* 100% of viewport width */
+  }
+
+  .custom-cone {
+    width:40px;
+    height:40px;
+  }
+  
+  /* Media queries for resolution and viewport adjustments */
+  @media (min-resolution: 2dppx) and (max-width: 767px) {
+    /* Styles for high-resolution mobile devices (e.g., iPhone 13 Pro) */
+    .infoText {
+      font-size: max(1.5vw, 1.5vh);
     }
-}
+    .customButton {
+      width: 25vw;
+      height: min(10vw, 10vh);
+      font-size: 2.5vw;
+    }
+    .nav-route {
+      font-size: 3vw;
+    }
+    .custom-cone {
+        width: 100px;
+        height: 110px;
+    }
+  }
+  
+  @media (min-resolution: 1dppx) and (max-width: 767px) {
+    /* Styles for lower-resolution mobile devices (e.g., iPhone 10) */
+    .infoText {
+      font-size: max(2vw, 2vh);
+    }
+    .customButton {
+      width: 20vw;
+      height: min(8vw, 8vh);
+      font-size: 2vw;
+    }
+    .nav-route {
+      font-size: 2.7vw;
+    }
+    .custom-cone {
+        width: 75px;
+        height: 80px;
+    }
+  }
+  
+  @media (min-width: 768px) and (max-width: 1199px) {
+    /* Styles for tablets */
+    .infoText {
+      font-size: max(1.8vw, 1.8vh);
+    }
+    .customButton {
+      width: 18vw;
+      height: min(7vw, 7vh);
+      font-size: 1.8vw;
+    }
+    .nav-route {
+      font-size: 2.2vw;
+    }
+    .custom-cone {
+        width: 40px;
+        height: 40px;
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    /* Styles for desktops */
+    .infoText {
+      font-size: max(1.5vw, 1.5vh);
+    }
+    .customButton {
+      width: 15vw;
+      height: min(6vw, 6vh);
+      font-size: 1.5vw;
+    }
+    .nav-route {
+      font-size: 1.9vw;
+    }
+    .custom-cone {
+        width: 25px;
+        height: 25px;
+    }
+  }
+  
+  @media only screen and (max-width: 768px) {
+    .mapContainer {
+      width: 100vw; /* 100% of viewport width */
+    }
+  }
