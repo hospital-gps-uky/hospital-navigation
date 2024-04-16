@@ -40,15 +40,15 @@
     sanity graphql deploy
     ```
 
-## Design structure
+# Design structure
 
-# Frontend
+## Frontend
 The frontend is developed using React and Gatsby.
 Gatsby is a framework used to build websites and easily integrates with GraphQL. Gatsby builds website staticly so everything is loaded at build time.
 Because of this, there are no runtime calls to the database.
 GraphQL is used for querying the database. Utilize "http://localhost:8000/___graphql" while running the webpage locally to easily write queries.
 
-# Backend
+## Backend
 The backend is built using Sanity. Sanity is a cloud hosted content management system. (Contact previous group for access.)
 
 **Sanity structure**
@@ -63,7 +63,7 @@ The backend is built using Sanity. Sanity is a cloud hosted content management s
 * Map: 2D Maps of the hospital displayed in the minimap.
 * Edge: Connects each location, necessary for creating a path between entrances and clinics.
 
-# Hosting
+## Hosting
 The website is hosted using Netlify. (Contact previous group for access.)
 Netlify uses webhooks to automatically rebuild the webpage whenever changes are made to Github or Sanity. Access these webhooks in the settings of Netlify and Sanity.
 
