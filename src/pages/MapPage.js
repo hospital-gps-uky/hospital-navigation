@@ -9,8 +9,10 @@ import { DijkstraCalculator } from 'dijkstra-calculator';
 import { GyroscopePlugin } from '@photo-sphere-viewer/gyroscope-plugin';
 import { MapPlugin } from '@photo-sphere-viewer/map-plugin';
 import '@photo-sphere-viewer/map-plugin/index.css';
+import { MarkersPlugin } from '@photo-sphere-viewer/markers-plugin';
+import "@photo-sphere-viewer/markers-plugin/index.css";
 
-
+import arrow from '../images/NavigationArrow.png';
  
 function RouteElement({ path, currentIndex }) {
     let locations = [];
@@ -101,7 +103,7 @@ const MapPage = ({ data, location } ) => {
             setCurrentIndex(0);
             return;
         }
-        
+
         const edges = data.allSanityEdge.edges;
         const locations = data.allSanityLocation.edges;
         const graph = createGraph(locations, edges);
@@ -116,9 +118,10 @@ const MapPage = ({ data, location } ) => {
         const newCurrentLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex]).node;
 
         // Calculate the angle towards the next location
+        let nextLoc = null;
         let angle = 0;
         if (currentIndex < path.length - 1) {
-          const nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
+          nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
           const deltaX = nextLoc.x - newCurrentLocation.x;
           const deltaY = nextLoc.y - newCurrentLocation.y;
           
@@ -129,8 +132,7 @@ const MapPage = ({ data, location } ) => {
         } 
 
         if(reverse && currentIndex === 0){
-          const nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+2]).node;
-
+          nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
           const deltaX = nextLoc.x - newCurrentLocation.x;
           const deltaY = nextLoc.y - newCurrentLocation.y;
           
@@ -180,14 +182,23 @@ const MapPage = ({ data, location } ) => {
           // Convert canvas to data URL
           const imageURL = canvas.toDataURL();
           
+          let markers = [{
+            // image marker rendered in the 3D scene
+            id: 'imageLayer',
+            imageLayer: arrow,
+            size: { width: 400, height: 200 },
+            position: { yaw: angle, pitch: -0.3 },
+            tooltip: 'Image embedded in the scene',
+          }]
+
           // Set the image with path drawn on it
           photoSphereRef.current.getPlugin(MapPlugin)?.setImage(imageURL, center, 0);
+          photoSphereRef.current.getPlugin(MarkersPlugin)?.setMarkers(markers);
           photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl, {transition: false, position: {yaw: angle , pitch: 0}});
+        
         };
         
     }, [path, currentIndex, reverse]);
-      
-
 
     function nextLocation() {
         if (currentIndex < path.length - 1) {
@@ -267,7 +278,8 @@ const MapPage = ({ data, location } ) => {
                           defaultZoom: 30,
                           coneSize: 80,
                           coneClassName: 'custom-cone',
-                      }]
+                      }],
+                      [MarkersPlugin],
                   ]}                   
                 />
             </div>
