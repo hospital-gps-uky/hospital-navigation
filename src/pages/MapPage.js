@@ -58,7 +58,6 @@ function calculateWeight(location1, location2){
     const deltaY = location1.y - location2.y;
 
     return Math.sqrt(deltaX ** 2 + deltaY ** 2);
-
 }
 
 
@@ -118,10 +117,9 @@ const MapPage = ({ data, location } ) => {
         const newCurrentLocation = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex]).node;
 
         // Calculate the angle towards the next location
-        let nextLoc = null;
         let angle = 0;
         if (currentIndex < path.length - 1) {
-          nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
+          const nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
           const deltaX = nextLoc.x - newCurrentLocation.x;
           const deltaY = nextLoc.y - newCurrentLocation.y;
           
@@ -132,9 +130,10 @@ const MapPage = ({ data, location } ) => {
         } 
 
         if(reverse && currentIndex === 0){
-          nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
-          const deltaX = nextLoc.x - newCurrentLocation.x;
-          const deltaY = nextLoc.y - newCurrentLocation.y;
+          const hallLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
+          const nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+2]).node;
+          const deltaX = nextLoc.x - hallLoc.x;
+          const deltaY = nextLoc.y - hallLoc.y;
           
           angle = Math.atan2(deltaY, deltaX) - Math.PI;
 
@@ -163,7 +162,7 @@ const MapPage = ({ data, location } ) => {
           
           // Draw the path on canvas
           context.strokeStyle = 'blue'; // Full opacity color
-          context.lineWidth = 5;
+          context.lineWidth = 10;
           for (let i = 0; i < path.length - 1; i++) {
             const startLocation = data.allSanityLocation.edges.find(location => location.node.name === path[i]).node;
             const endLocation = data.allSanityLocation.edges.find(location => location.node.name === path[i + 1]).node;
@@ -182,20 +181,31 @@ const MapPage = ({ data, location } ) => {
           // Convert canvas to data URL
           const imageURL = canvas.toDataURL();
           
+          // For maintaining aspect ratio of image.
+          const arrowHeight = 250;
+          // Bottom Arrow
           let markers = [{
             // image marker rendered in the 3D scene
             id: 'imageLayer',
             imageLayer: arrow,
-            size: { width: 400, height: 200 },
+            size: { width: arrowHeight * 2.07, height: arrowHeight },
             position: { yaw: angle, pitch: -0.3 },
-            tooltip: 'Image embedded in the scene',
           }]
 
           // Set the image with path drawn on it
           photoSphereRef.current.getPlugin(MapPlugin)?.setImage(imageURL, center, 0);
-          photoSphereRef.current.getPlugin(MarkersPlugin)?.setMarkers(markers);
+          // Add the arrow at the bottom of the screen.)
+          if(currentIndex == path.length - 1) {
+            photoSphereRef.current.getPlugin(MarkersPlugin)?.setMarkers(null);
+          } else {
+            photoSphereRef.current.getPlugin(MarkersPlugin)?.setMarkers(markers);
+          }
+          // Update the next image
           photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl, {transition: false, position: {yaw: angle , pitch: 0}});
-        
+          // Go to next location after click.
+          photoSphereRef.current.getPlugin(MarkersPlugin)?.addEventListener('select-marker', ({ marker }) => {
+            nextLocation();
+          });
         };
         
     }, [path, currentIndex, reverse]);
@@ -212,7 +222,7 @@ const MapPage = ({ data, location } ) => {
     }
     function returnToStart() {
         setPath(path.reverse())
-        setCurrentIndex(0);
+        setCurrentIndex(1);
         setReverse(true);
     }
 
