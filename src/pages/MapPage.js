@@ -286,6 +286,7 @@ const MapPage = ({ data, location } ) => {
                           center: { x: 1035, y: 727 }, // Default coordinates
                           rotation: '0deg',
                           defaultZoom: 30,
+                          size: '15vh',
                           coneSize: 80,
                           coneClassName: 'custom-cone',
                       }],
