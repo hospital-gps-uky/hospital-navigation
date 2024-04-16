@@ -63,6 +63,10 @@ The backend is built using Sanity. Sanity is a cloud hosted content management s
 * Map: 2D Maps of the hospital displayed in the minimap.
 * Edge: Connects each location, necessary for creating a path between entrances and clinics.
 
+Notes on images:
+* All images except for end locations should be oriented up / north with respect to the 2D map. The program works by calculating the angle between the current location and the next location using x/y coordinates, and then rotating the image the correct direction. The images must be as straight as possible for the paths to look good.
+* On hitting return to start, the path will skip the initial image resulting in a smoother user experience. (You would hit the button and be in virtually the same space which was sometimes confusing.)
+
 ## Hosting
 The website is hosted using Netlify. (Contact previous group for access.)
 Netlify uses webhooks to automatically rebuild the webpage whenever changes are made to Github or Sanity. Access these webhooks in the settings of Netlify and Sanity.
