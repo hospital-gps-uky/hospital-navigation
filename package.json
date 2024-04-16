@@ -19,6 +19,8 @@
     "@photo-sphere-viewer/core": "^5.7.2",
     "@photo-sphere-viewer/gyroscope-plugin": "^5.7.2",
     "@photo-sphere-viewer/map-plugin": "^5.7.2",
+    "@photo-sphere-viewer/markers-plugin": "^5.7.2-fix.1",
+    "@photo-sphere-viewer/virtual-tour-plugin": "^5.7.2",
     "dijkstra-calculator": "^1.0.8",
     "dijkstrajs": "^1.0.3",
     "framer-motion": "^11.0.25",

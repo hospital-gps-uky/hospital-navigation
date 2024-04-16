@@ -9,8 +9,10 @@ import { DijkstraCalculator } from 'dijkstra-calculator';
 import { GyroscopePlugin } from '@photo-sphere-viewer/gyroscope-plugin';
 import { MapPlugin } from '@photo-sphere-viewer/map-plugin';
 import '@photo-sphere-viewer/map-plugin/index.css';
+import { MarkersPlugin } from '@photo-sphere-viewer/markers-plugin';
+import "@photo-sphere-viewer/markers-plugin/index.css";
 
-
+import arrow from '../images/NavigationArrow.png';
  
 function RouteElement({ path, currentIndex }) {
     let locations = [];
@@ -56,7 +58,6 @@ function calculateWeight(location1, location2){
     const deltaY = location1.y - location2.y;
 
     return Math.sqrt(deltaX ** 2 + deltaY ** 2);
-
 }
 
 
@@ -101,7 +102,7 @@ const MapPage = ({ data, location } ) => {
             setCurrentIndex(0);
             return;
         }
-        
+
         const edges = data.allSanityEdge.edges;
         const locations = data.allSanityLocation.edges;
         const graph = createGraph(locations, edges);
@@ -129,10 +130,10 @@ const MapPage = ({ data, location } ) => {
         } 
 
         if(reverse && currentIndex === 0){
+          const hallLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
           const nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+2]).node;
-
-          const deltaX = nextLoc.x - newCurrentLocation.x;
-          const deltaY = nextLoc.y - newCurrentLocation.y;
+          const deltaX = nextLoc.x - hallLoc.x;
+          const deltaY = nextLoc.y - hallLoc.y;
           
           angle = Math.atan2(deltaY, deltaX) - Math.PI;
 
@@ -161,7 +162,7 @@ const MapPage = ({ data, location } ) => {
           
           // Draw the path on canvas
           context.strokeStyle = 'blue'; // Full opacity color
-          context.lineWidth = 5;
+          context.lineWidth = 10;
           for (let i = 0; i < path.length - 1; i++) {
             const startLocation = data.allSanityLocation.edges.find(location => location.node.name === path[i]).node;
             const endLocation = data.allSanityLocation.edges.find(location => location.node.name === path[i + 1]).node;
@@ -180,14 +181,34 @@ const MapPage = ({ data, location } ) => {
           // Convert canvas to data URL
           const imageURL = canvas.toDataURL();
           
+          // For maintaining aspect ratio of image.
+          const arrowHeight = 250;
+          // Bottom Arrow
+          let markers = [{
+            // image marker rendered in the 3D scene
+            id: 'imageLayer',
+            imageLayer: arrow,
+            size: { width: arrowHeight * 2.07, height: arrowHeight },
+            position: { yaw: angle, pitch: -0.3 },
+          }]
+
           // Set the image with path drawn on it
           photoSphereRef.current.getPlugin(MapPlugin)?.setImage(imageURL, center, 0);
+          // Add the arrow at the bottom of the screen.)
+          if(currentIndex == path.length - 1) {
+            photoSphereRef.current.getPlugin(MarkersPlugin)?.setMarkers(null);
+          } else {
+            photoSphereRef.current.getPlugin(MarkersPlugin)?.setMarkers(markers);
+          }
+          // Update the next image
           photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl, {transition: false, position: {yaw: angle , pitch: 0}});
+          // Go to next location after click.
+          photoSphereRef.current.getPlugin(MarkersPlugin)?.addEventListener('select-marker', ({ marker }) => {
+            nextLocation();
+          });
         };
         
     }, [path, currentIndex, reverse]);
-      
-
 
     function nextLocation() {
         if (currentIndex < path.length - 1) {
@@ -201,7 +222,7 @@ const MapPage = ({ data, location } ) => {
     }
     function returnToStart() {
         setPath(path.reverse())
-        setCurrentIndex(0);
+        setCurrentIndex(1);
         setReverse(true);
     }
 
@@ -267,7 +288,8 @@ const MapPage = ({ data, location } ) => {
                           defaultZoom: 30,
                           coneSize: 80,
                           coneClassName: 'custom-cone',
-                      }]
+                      }],
+                      [MarkersPlugin],
                   ]}                   
                 />
             </div>
