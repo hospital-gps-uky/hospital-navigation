@@ -1,3 +1,7 @@
+/*
+  All 360 image logic is handled in this file.
+*/
+
 import React, { useState, useEffect } from 'react';
 import './MapPage.css';
 import MapButton from '../components/MapButton';
@@ -11,47 +15,10 @@ import { MapPlugin } from '@photo-sphere-viewer/map-plugin';
 import '@photo-sphere-viewer/map-plugin/index.css';
 import { MarkersPlugin } from '@photo-sphere-viewer/markers-plugin';
 import "@photo-sphere-viewer/markers-plugin/index.css";
+import RouteElement from '../components/RouteElement';
 
+// Navigation arrow.
 import arrow from '../images/NavigationArrow.png';
- 
-function RouteElement({ path, currentIndex }) {
-    let locations = [];
-  
-    // Check if there are enough locations in the path
-    if (path.length < 2) {
-      locations.push(<div key={path[0]} className="navitem bold-location">{path[0]}</div>);
-    } else {
-      // If at the last index, display only the start and end locations
-      if (currentIndex === path.length - 1) {
-        locations.push(<div key={path[0]} className="navitem">{path[0]}</div>);
-        locations.push(<div key={`${path[0]}Arrow`} className="nav-item">&nbsp; → &nbsp;</div>);
-        locations.push(<div key={path[path.length - 1]} className="navitem bold-location">{path[path.length - 1]}</div>);
-      } else {
-        // Add the first location only if currentIndex is not 0
-        if (currentIndex > 0) {
-          locations.push(<div key={path[0]} className="navitem">{path[0]}</div>);
-          locations.push(<div key={`${path[0]}Arrow`} className="nav-item">&nbsp; → &nbsp;</div>);
-          locations.push(<div key={path[currentIndex - 1]} className="navitem">{path[currentIndex - 1]}</div>);
-          locations.push(<div key={`${path[currentIndex - 1]}Arrow`} className="nav-item">&nbsp; → &nbsp;</div>);
-        }
-        
-        // Add the current location
-        locations.push(<div key={path[currentIndex]} className="navitem bold-location">{path[currentIndex]}</div>);
-        locations.push(<div key={`${path[currentIndex]}Arrow`} className="nav-item">&nbsp; → &nbsp;</div>);
-  
-        // Add the next location (if not the last location)
-        if (currentIndex < path.length - 2) {
-          locations.push(<div key={path[currentIndex + 1]} className="navitem">{path[currentIndex + 1]}</div>);
-          locations.push(<div key={`${path[currentIndex + 1]}Arrow`} className="nav-item">&nbsp; → &nbsp;</div>);
-        }
-        
-        // Add the last location
-        locations.push(<div key={path[path.length - 1]} className="navitem">{path[path.length - 1]}</div>);
-      }
-    }
-  
-    return <div className="nav-route">{locations}</div>;
-}
 
 function calculateWeight(location1, location2){
     const deltaX = location1.x - location2.x;
@@ -59,7 +26,6 @@ function calculateWeight(location1, location2){
 
     return Math.sqrt(deltaX ** 2 + deltaY ** 2);
 }
-
 
 // Take an array of edges, calculate weights, and create graph.
 function createGraph(locations, edges) {
@@ -84,18 +50,19 @@ const MapPage = ({ data, location } ) => {
     const maps = data.allSanityMap.nodes; // Use this to access an array of the maps.
 
     let [currentIndex, setCurrentIndex] = useState(0); // The current index into the path array
-    let [path, setPath] = useState([]);
-    let [reverse, setReverse] = useState(false);
+    let [path, setPath] = useState([]); 
+    let [reverse, setReverse] = useState(false); // Indicates whether the user is traveling in reverse.
 
     let start = null;
     let end = null;
     
+    // Initalize start and end state variables.
     if(typeof location.state !== "undefined") {
         start = location.state.startName;
         end = location.state.endName;
     } 
         
-    // Create path
+    // Create path on initialization.
     useEffect(() => {
         if (start === undefined || end === undefined) {
             setPath([]);
@@ -110,7 +77,7 @@ const MapPage = ({ data, location } ) => {
         setCurrentIndex(0);
     }, [start, end]);
 
-    // Update image.
+    // Update image when path or index is updated.
     useEffect(() => {
         if (path.length <= 0 || !photoSphereRef.current) return;
         
@@ -128,18 +95,6 @@ const MapPage = ({ data, location } ) => {
           angle = (angle >= 0 ? angle : (2 * Math.PI + angle)) + Math.PI/2;
 
         } 
-
-        if(reverse && currentIndex === 0){
-          const hallLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+1]).node;
-          const nextLoc = data.allSanityLocation.edges.find(location => location.node.name === path[currentIndex+2]).node;
-          const deltaX = nextLoc.x - hallLoc.x;
-          const deltaY = nextLoc.y - hallLoc.y;
-          
-          angle = Math.atan2(deltaY, deltaX) - Math.PI;
-
-          // Adjust the angle to be within the range of 0 to 6.28 (2 * Math.PI)
-          angle = (angle >= 0 ? angle : (2 * Math.PI + angle)) + Math.PI/2;
-        }
 
         // Update center coordinates dynamically
         const center = { x: newCurrentLocation.x, y: newCurrentLocation.y };
@@ -194,7 +149,7 @@ const MapPage = ({ data, location } ) => {
 
           // Set the image with path drawn on it
           photoSphereRef.current.getPlugin(MapPlugin)?.setImage(imageURL, center, 0);
-          // Add the arrow at the bottom of the screen.)
+          // Add the arrow at the bottom of the screen.). Remove arrow if last image.
           if(currentIndex == path.length - 1) {
             photoSphereRef.current.getPlugin(MarkersPlugin)?.setMarkers(null);
           } else {
@@ -202,7 +157,7 @@ const MapPage = ({ data, location } ) => {
           }
           // Update the next image
           photoSphereRef.current.setPanorama(newCurrentLocation.image3D.asset.publicUrl, {transition: false, position: {yaw: angle , pitch: 0}});
-          // Go to next location after click.
+          // Go to next location after click on marker.
           photoSphereRef.current.getPlugin(MarkersPlugin)?.addEventListener('select-marker', ({ marker }) => {
             nextLocation();
           });
@@ -234,6 +189,9 @@ const MapPage = ({ data, location } ) => {
                 <Link to={`/ChooseEnd/`} state={{ startName: start}}>
                     <MapButton link={""} displayText="New Destination" />
                 </Link>
+
+
+                {/* Logic for which buttons should be displayed. */}
                 {!reverse || (reverse && currentIndex < path.length - 1) ? (
                     <>
                         {currentIndex > 0 && (
