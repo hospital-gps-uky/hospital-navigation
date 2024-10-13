@@ -24,9 +24,9 @@ def pipe(filename, newFolder):
         
         # Iterate over each row in the CSV file
         for row in csvreader:
-            makeQR(row[0], row[1], newFolder)
+            makeQR(row[0], row[1], row[2], newFolder)
 
-def makeQR(website_url, saveName, newFolder):
+def makeQR(website_url, saveName, entrance_name, newFolder):
 
     # Overlay image for UK heathcare logo
     img_overlay =  Image.open('./qrthings/ukhealthlogo.png')
@@ -66,16 +66,19 @@ def makeQR(website_url, saveName, newFolder):
     sub_title = "Scan Me."
     text_position_sub = (555,125)
 
-    #descriptive_text = "For directions to your appointment, scan this QR Code with your phone camera."
-    #text_position_descript = (150, 1200)
+    entrance_title = entrance_name
+    text_position_entrance = (500, 1550)
 
-    #Draw on image 
+    # descriptive_text = "For directions to your appointment, scan this QR Code with your phone camera."
+    # text_position_descript = (150, 1200)
+
+    # Draw text on image 
     draw.text(text_position, title, fill = text_color, font = font)
     draw.text(text_position_sub, sub_title, fill = text_color, font = font)
+    # draw.text(text_position_descript, descriptive_text, fill = text_color, font = font_descript)
+    draw.text(text_position_entrance, entrance_title, fill = text_color, font = font_descript)
 
-    #draw.text(text_position_descript, descriptive_text, fill = text_color, font = font_descript)
-
-    #show generated qr image - can save from here 
+    # show generated qr image - can save from here 
     # qr_image.show()
 
     # Option to save QR code
