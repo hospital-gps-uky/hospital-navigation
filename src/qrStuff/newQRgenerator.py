@@ -4,8 +4,18 @@ from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import csv
 import os
-# from app import app
+import argparse
 
+# qr_dir os path
+qr_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Argument parser
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--input_path', default = os.path.join(qr_dir, 'entrance_urls.csv'), help = 'Path to csv containging links and image names.')
+parser.add_argument('-o', '--output_path', default = os.path.join(qr_dir, 'output'), help = 'Path to directory where image will be output')
+args = parser.parse_args()
+
+# from app import app
 def pipe(filename, newFolder):
     os.makedirs(newFolder)
     with open(filename, newline='') as csvfile:
@@ -74,9 +84,7 @@ def makeQR(website_url, saveName, newFolder):
     qr_io.seek(0)
 
 def main():
-    pathsAndSaveNames = input("Type the .csv file that contains your paths and desired save names: ")
-    newFolder = input("Input the name of the folder you would like these codes to be saved in: ")
-    pipe(pathsAndSaveNames, newFolder)
+    pipe(args.input_path, args.output_path)
 
 if __name__ == "__main__":
     main()
