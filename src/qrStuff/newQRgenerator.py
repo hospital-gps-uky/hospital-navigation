@@ -12,7 +12,7 @@ qr_dir = os.path.dirname(os.path.abspath(__file__))
 # Argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input_path', default = os.path.join(qr_dir, 'entrance_urls.csv'), help = 'Path to csv containging links and image names.')
-parser.add_argument('-o', '--output_path', default = os.path.join(qr_dir, 'output'), help = 'Path to directory where image will be output')
+parser.add_argument('-o', '--output_path', default = os.path.join(qr_dir, 'output'), help = 'Path to directory where image will be output.')
 args = parser.parse_args()
 
 # from app import app
