@@ -17,7 +17,8 @@ args = parser.parse_args()
 
 # from app import app
 def pipe(filename, newFolder):
-    os.makedirs(newFolder)
+    if not os.path.exists(newFolder):
+        os.makedirs(newFolder)
     with open(filename, newline='') as csvfile:
         csvreader = csv.reader(csvfile, delimiter=',')
         
