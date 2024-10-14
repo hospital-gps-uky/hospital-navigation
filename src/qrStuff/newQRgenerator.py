@@ -36,7 +36,7 @@ def makeQR(website_url, saveName, entrance_name, newFolder):
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=30,
-        border=10,
+        border=0,
     )
     qr.add_data(website_url)
     qr.make(fit=True)
@@ -44,13 +44,18 @@ def makeQR(website_url, saveName, entrance_name, newFolder):
     qr_image = qr.make_image(fill_color="black", back_color="white")
 
     #size logo 
-    overlay = img_overlay.resize((350,250))
+    # overlay = img_overlay.resize((900,500))
+    qr_image = qr_image.resize((1200,1200))
+    img_overlay = img_overlay.resize((450,250))
+
+    background = Image.new('RGB', (1684,2384), "white")
 
     #combine QR code and image
-    qr_image.paste(overlay, (50,1250))
+    background.paste(qr_image, (242,592))
+    background.paste(img_overlay, (100,2134))
 
     #drawing object for formatting QR Code 
-    draw = ImageDraw.Draw(qr_image)
+    draw = ImageDraw.Draw(background)
 
     #add directions to the file to be downloaded 
     text_color = 0
@@ -61,13 +66,13 @@ def makeQR(website_url, saveName, entrance_name, newFolder):
     font_descript = ImageFont.truetype("qrthings/times.ttf", font_size_description)
 
     title = "Need Directions?"
-    text_position = (400, 10)
+    text_position = (500, 200)
 
-    sub_title = "Scan Me."
-    text_position_sub = (555,125)
+    sub_title = "Scan Me!"
+    text_position_sub = (650,350)
 
     entrance_title = entrance_name
-    text_position_entrance = (500, 1550)
+    text_position_entrance = (650, 2320)
 
     # descriptive_text = "For directions to your appointment, scan this QR Code with your phone camera."
     # text_position_descript = (150, 1200)
@@ -82,10 +87,10 @@ def makeQR(website_url, saveName, entrance_name, newFolder):
     # qr_image.show()
 
     # Option to save QR code
-    qr_io = BytesIO()
+    # qr_io = BytesIO()
     #qr_image.save(qr_io, format='PNG')
-    qr_image.save(newFolder + "\\" + saveName, 'PNG')
-    qr_io.seek(0)
+    background.save(newFolder + "\\" + saveName, 'PNG')
+    # qr_io.seek(0)
 
 def main():
     pipe(args.input_path, args.output_path)
