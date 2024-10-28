@@ -33,7 +33,8 @@
     "react-dom": "^18.2.0",
     "react-pannellum": "^0.2.14",
     "react-photo-sphere-viewer": "^5.0.2-psv5.7.1",
-    "react-router-dom": "^6.22.3"
+    "react-router-dom": "^6.22.3",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
