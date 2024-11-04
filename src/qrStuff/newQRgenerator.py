@@ -29,7 +29,7 @@ def pipe(filename, newFolder):
 def makeQR(website_url, saveName, entrance_name, newFolder):
 
     # Overlay image for UK heathcare logo
-    img_overlay =  Image.open('./qrthings/ukhealthlogo.png')
+    img_overlay =  Image.open(os.path.join(qr_dir, 'qrthings/ukhealthlogo.png'))
 
     # Generate a QR code for the website URL
     qr = qrcode.QRCode(
@@ -89,7 +89,7 @@ def makeQR(website_url, saveName, entrance_name, newFolder):
     # Option to save QR code
     # qr_io = BytesIO()
     #qr_image.save(qr_io, format='PNG')
-    background.save(newFolder + "\\" + saveName, 'PNG')
+    background.save(os.path.join(qr_dir, newFolder + '/' + saveName), 'PNG')
     # qr_io.seek(0)
 
 def main():
