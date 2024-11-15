@@ -1,7 +1,5 @@
-from flask import Flask, send_file, request
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
-from io import BytesIO
 import csv
 import os
 import argparse
@@ -43,21 +41,20 @@ def makeQR(website_url, saveName, entrance_name, newFolder):
 
     qr_image = qr.make_image(fill_color="black", back_color="white")
 
-    #size logo 
-    # overlay = img_overlay.resize((900,500))
+    # Size logo 
     qr_image = qr_image.resize((1200,1200))
     img_overlay = img_overlay.resize((450,250))
 
     background = Image.new('RGB', (1684,2384), "white")
 
-    #combine QR code and image
+    # Combine QR code and image
     background.paste(qr_image, (242,592))
     background.paste(img_overlay, (100,2134))
 
-    #drawing object for formatting QR Code 
+    # Drawing object for formatting QR Code 
     draw = ImageDraw.Draw(background)
 
-    #add directions to the file to be downloaded 
+    # Add directions to the file to be downloaded 
     text_color = 0
     font_size = 100
     font = ImageFont.truetype("qrthings/times.ttf", font_size)
@@ -74,23 +71,14 @@ def makeQR(website_url, saveName, entrance_name, newFolder):
     entrance_title = entrance_name
     text_position_entrance = (650, 2320)
 
-    # descriptive_text = "For directions to your appointment, scan this QR Code with your phone camera."
-    # text_position_descript = (150, 1200)
 
     # Draw text on image 
     draw.text(text_position, title, fill = text_color, font = font)
     draw.text(text_position_sub, sub_title, fill = text_color, font = font)
-    # draw.text(text_position_descript, descriptive_text, fill = text_color, font = font_descript)
     draw.text(text_position_entrance, entrance_title, fill = text_color, font = font_descript)
 
-    # show generated qr image - can save from here 
-    # qr_image.show()
-
     # Option to save QR code
-    # qr_io = BytesIO()
-    #qr_image.save(qr_io, format='PNG')
     background.save(os.path.join(qr_dir, newFolder + '/' + saveName), 'PNG')
-    # qr_io.seek(0)
 
 def main():
     pipe(args.input, args.output)
