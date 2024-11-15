@@ -11,8 +11,8 @@ qr_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Argument parser
 parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--input_path', default = os.path.join(qr_dir, 'entrance_urls.csv'), help = 'Path to csv containging links and image names.')
-parser.add_argument('-o', '--output_path', default = os.path.join(qr_dir, 'output'), help = 'Path to directory where image will be output.')
+parser.add_argument('-i', '--input', default = os.path.join(qr_dir, 'entrance_urls.csv'), help = 'Path to csv containging links and image names.')
+parser.add_argument('-o', '--output', default = os.path.join(qr_dir, 'output'), help = 'Path to directory where image will be output.')
 args = parser.parse_args()
 
 # from app import app
@@ -93,7 +93,7 @@ def makeQR(website_url, saveName, entrance_name, newFolder):
     # qr_io.seek(0)
 
 def main():
-    pipe(args.input_path, args.output_path)
+    pipe(args.input, args.output)
 
 if __name__ == "__main__":
     main()
